@@ -1,4 +1,4 @@
-module github.com/S4mkiel/test
+module github.com/S4mkiel/CobraTreino.git
 
 go 1.19
 
