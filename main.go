@@ -9,18 +9,17 @@ import (
 
 type User struct {
 	gorm.Model
-	Username 		string `gorm:"unique_index"`
-	Name  			string
-	Age 			uint
-	Companies 		[]Company
+	Username 			string `gorm:"unique_index"`
+	Name  				string
+	Age 				uint
+	CompanyID 			uint `gorm:"ForeignKey:CompanyRefer"`
+    CompanyRefer 		Company `gorm:"ForeignKey:CompanyID;AssociationForeignKey:ID"`
 }
 
 type Company struct {
 	gorm.Model
 	nameCompany 	string `gorm:"unique_index"`
-	UserID 			uint `gorm:"ForeignKey:UserRefer"`
-    UserRefer 		User `gorm:"ForeignKey:UserID;AssociationForeignKey:ID"`
-
+	Companies 		[]User 
 }
 
 func main() {
