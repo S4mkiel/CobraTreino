@@ -6,7 +6,7 @@ import (
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
 	"github.com/spf13/cobra"
 )
-
+// ..a
 type User struct {
     gorm.Model
     Username     string `gorm:"unique_index"`
