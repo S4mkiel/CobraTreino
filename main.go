@@ -8,18 +8,18 @@ import (
 )
 
 type User struct {
-	gorm.Model
-	Username 			string `gorm:"unique_index"`
-	Name  				string
-	Age 				uint
-	CompanyID 			uint `gorm:"ForeignKey:CompanyRefer"`
-    CompanyRefer 		Company `gorm:"ForeignKey:CompanyID;AssociationForeignKey:ID"`
+    gorm.Model
+    Username     string `gorm:"unique_index"`
+    Name         string
+    Age          uint
+    CompanyID    uint `gorm:"ForeignKey:CompanyRefer"`
+    CompanyRefer Company `gorm:"ForeignKey:CompanyID;AssociationForeignKey:ID"`
 }
+
 
 type Company struct {
 	gorm.Model
 	nameCompany 	string `gorm:"unique_index"`
-	Companies 		[]User 
 }
 
 func main() {
@@ -40,9 +40,29 @@ func main() {
 			Username, _ := cmd.Flags().GetString("username") 
 			Name, _ := cmd.Flags().GetString("name") 
 			Age, _ := cmd.Flags().GetUint("age") 
-			nameCompany, _ := cmd.Flags().GetString("nameCompany") 
-			db.Create(&User{Username: Username, Name: Name, Age: Age})
-			db.Create(&Company{nameCompany: nameCompany})
+			nameCompany, _ := cmd.Flags().GetString("nameCompany")
+			companyID, _ := cmd.Flags().GetUint("companyID") 
+			if err := db.Create(&User{Username: Username, Name: Name, Age: Age, CompanyID: companyID}).Error; err != nil {
+    			fmt.Println("Error creating user:", err)
+    			return
+			}
+			tx := db.Begin()
+			if err := tx.Create(&User{Username: Username, Name: Name, Age: Age}).Error; err != nil {
+   	 			tx.Rollback()
+    			fmt.Println("Error creating user:", err)
+    			return
+			}
+			tx.Commit()
+			if err := db.Create(&Company{nameCompany: nameCompany}).Error; err != nil {
+    			fmt.Println("Error creating company:", err)
+    			return
+			}
+			if err := tx.Create(&Company{nameCompany: nameCompany}).Error; err != nil {
+   	 			tx.Rollback()
+    			fmt.Println("Error creating user:", err)
+    			return
+			}
+			tx.Commit()
 			fmt.Println("User and Company created with successfully.")
 		},
 	}
@@ -54,6 +74,8 @@ func main() {
 	createCmd.MarkFlagRequired("age")
 	createCmd.Flags().String("nameCompany", "", "name for company")
 	createCmd.MarkFlagRequired("nameCompany")
+	createCmd.Flags().Uint("companyID", 0, "companyID for use")
+	createCmd.MarkFlagRequired("companyID")
 	rootCmd.AddCommand(createCmd)
 	rootCmd.Execute()
 }
