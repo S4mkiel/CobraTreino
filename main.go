@@ -19,7 +19,7 @@ type User struct {
 
 type Company struct {
 	gorm.Model
-	nameCompany 	string `gorm:"unique_index"`
+	Name 	string `gorm:"unique_index"`
 }
 
 func main() {
@@ -42,25 +42,16 @@ func main() {
 			Age, _ := cmd.Flags().GetUint("age") 
 			nameCompany, _ := cmd.Flags().GetString("nameCompany")
 			companyID, _ := cmd.Flags().GetUint("companyID") 
-			if err := db.Create(&User{Username: Username, Name: Name, Age: Age, CompanyID: companyID}).Error; err != nil {
-    			fmt.Println("Error creating user:", err)
-    			return
-			}
 			tx := db.Begin()
-			if err := tx.Create(&User{Username: Username, Name: Name, Age: Age}).Error; err != nil {
-   	 			tx.Rollback()
-    			fmt.Println("Error creating user:", err)
-    			return
+			if err := tx.Create(&Company{Name: nameCompany}).Error; err != nil {
+				fmt.Println("Error creating company:", err)
+				tx.Rollback()
+				return
 			}
-			tx.Commit()
-			if err := db.Create(&Company{nameCompany: nameCompany}).Error; err != nil {
-    			fmt.Println("Error creating company:", err)
-    			return
-			}
-			if err := tx.Create(&Company{nameCompany: nameCompany}).Error; err != nil {
-   	 			tx.Rollback()
-    			fmt.Println("Error creating user:", err)
-    			return
+			if err := tx.Create(&User{Username: Username, Name: Name, Age: Age, CompanyID: companyID}).Error; err != nil {
+				fmt.Println("Error creating user:", err)
+				tx.Rollback()
+				return
 			}
 			tx.Commit()
 			fmt.Println("User and Company created with successfully.")
