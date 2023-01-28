@@ -1,25 +1,25 @@
 package main
 
 import (
-	"fmt"
+	f "fmt"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
 	"github.com/spf13/cobra"
 )
+
 // ..a
 type User struct {
-    gorm.Model
-    Username     string `gorm:"unique_index"`
-    Name         string
-    Age          uint
-    CompanyID    uint `gorm:"ForeignKey:CompanyRefer"`
-    CompanyRefer Company `gorm:"ForeignKey:CompanyID;AssociationForeignKey:ID"`
+	gorm.Model
+	Username     string `gorm:"unique_index"`
+	Name         string
+	Age          uint
+	CompanyID    uint    `gorm:"ForeignKey:CompanyRefer"`
+	CompanyRefer Company `gorm:"ForeignKey:CompanyID;AssociationForeignKey:ID"`
 }
-
 
 type Company struct {
 	gorm.Model
-	Name 	string `gorm:"unique_index"`
+	Name string `gorm:"unique_index"`
 }
 
 func main() {
@@ -37,11 +37,11 @@ func main() {
 		Use:   "create user and company",
 		Short: "Create a user and company",
 		Run: func(cmd *cobra.Command, args []string) {
-			Username, _ := cmd.Flags().GetString("username") 
-			Name, _ := cmd.Flags().GetString("name") 
-			Age, _ := cmd.Flags().GetUint("age") 
+			Username, _ := cmd.Flags().GetString("username")
+			Name, _ := cmd.Flags().GetString("name")
+			Age, _ := cmd.Flags().GetUint("age")
 			nameCompany, _ := cmd.Flags().GetString("nameCompany")
-			companyID, _ := cmd.Flags().GetUint("companyID") 
+			companyID, _ := cmd.Flags().GetUint("companyID")
 			tx := db.Begin()
 			if err := tx.Create(&Company{Name: nameCompany}).Error; err != nil {
 				fmt.Println("Error creating company:", err)
