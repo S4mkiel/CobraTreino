@@ -3,6 +3,7 @@ package main
 // Importing the packages
 import (
 	f "fmt"
+	"log"
 
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
@@ -37,7 +38,10 @@ func main() {
 	// Closing the database
 	defer db.Close()
 	// AutoMigrate the database
-	db.AutoMigrate(&User{}, &Company{})
+	if err := db.AutoMigrate(&User{}, &Company{}).Error; err != nil {
+		log.Fatal(err)
+		return
+	}
 	// Creating the commands using cobra
 	var rootCmd = &cobra.Command{Use: "app"}
 	// Adding the commands to the root command
