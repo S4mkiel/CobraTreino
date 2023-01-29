@@ -12,7 +12,7 @@ import (
 // Creating the User
 type User struct {
 	gorm.Model
-	Username     string `gorm:"unique_index"`
+	Username     string `gorm:"unique_index;not null"`
 	Name         string
 	Age          uint
 	CompanyID    uint    `gorm:"ForeignKey:CompanyRefer"`
@@ -22,7 +22,7 @@ type User struct {
 // Creating the struct Company
 type Company struct {
 	gorm.Model
-	Name string `gorm:"unique_index;"`
+	Name string `gorm:"unique_index;not null"`
 }
 
 // Main function
